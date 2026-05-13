@@ -1,0 +1,40 @@
+<div class="auth-page">
+  <div class="auth-card card">
+
+    <div class="auth-head">
+      <div class="auth-icon">🎲</div>
+      <h1>Welcome back</h1>
+      <p>Sign in to your account</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <input id="username" class="form-control" type="text"
+          formControlName="username" placeholder="Your username" autocomplete="username">
+        @if (form.get('username')?.invalid && form.get('username')?.touched) {
+          <span class="form-error">Username is required</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input id="password" class="form-control" type="password"
+          formControlName="password" placeholder="••••••••" autocomplete="current-password">
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <span class="form-error">Minimum 6 characters</span>
+        }
+      </div>
+
+      <button class="btn btn-primary btn-full" type="submit" [disabled]="loading">
+        @if (loading) { <span class="spinner spinner-xs"></span> }
+        {{ loading ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+
+    <p class="auth-foot">
+      Don't have an account?
+      <a routerLink="/auth/register">Sign up</a>
+    </p>
+  </div>
+</div>

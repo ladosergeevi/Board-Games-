@@ -1,0 +1,120 @@
+<div class="container">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="hero-badge">🎲 Board Game Store</span>
+      <h1 class="hero-title">Find Your<br><span class="hero-accent">Next Adventure</span></h1>
+      <p class="hero-desc">
+        Hundreds of board games for every occasion — family nights,
+        game sessions with friends, and solo challenges.
+      </p>
+      <div class="hero-stats">
+        <div class="stat"><strong>{{ allGames().length }}</strong><span>Games</span></div>
+        <div class="stat-sep"></div>
+        <div class="stat"><strong>Free</strong><span>Shipping</span></div>
+        <div class="stat-sep"></div>
+        <div class="stat"><strong>24/7</strong><span>Support</span></div>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-blob"></div>
+      <div class="hero-emojis">
+        <span class="em em1">♟️</span>
+        <span class="em em2">🎯</span>
+        <span class="em em3">🃏</span>
+        <span class="em em4">🎲</span>
+        <span class="em em5">🏆</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <section class="filters card">
+    <div class="filter-field">
+      <label class="form-label">Search</label>
+      <div class="search-wrap">
+        <svg class="search-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input class="form-control search-input" type="text" [(ngModel)]="search"
+          placeholder="Game name…" (input)="applyFilters()">
+      </div>
+    </div>
+
+    <div class="filter-field filter-sm">
+      <label class="form-label">Min price</label>
+      <input class="form-control" type="number" [(ngModel)]="minPrice"
+        placeholder="0" min="0" (input)="applyFilters()">
+    </div>
+
+    <div class="filter-field filter-sm">
+      <label class="form-label">Max price</label>
+      <input class="form-control" type="number" [(ngModel)]="maxPrice"
+        placeholder="1000" min="0" (input)="applyFilters()">
+    </div>
+
+    <div class="filter-field filter-sm">
+      <label class="form-label">Sort by</label>
+      <select class="form-control" [(ngModel)]="sortBy" (change)="applyFilters()">
+        <option value="">Default</option>
+        <option value="price_asc">Price: low → high</option>
+        <option value="price_desc">Price: high → low</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+
+    @if (hasFilters()) {
+      <button class="btn btn-ghost btn-sm reset-btn" (click)="resetFilters()">✕ Clear</button>
+    }
+  </section>
+
+  <!-- Results info -->
+  <div class="results-row">
+    <p class="results-count">
+      Showing <strong>{{ filtered().length }}</strong> of <strong>{{ allGames().length }}</strong> games
+    </p>
+  </div>
+
+  <!-- Grid -->
+  @if (loading()) {
+    <div class="spinner-wrap"><div class="spinner spinner-lg"></div></div>
+  } @else if (filtered().length === 0) {
+    <div class="empty">
+      <div class="empty-icon">🔍</div>
+      <h3 class="empty-title">No games found</h3>
+      <p class="empty-desc">Try adjusting your search or filters</p>
+      <button class="btn btn-primary" style="margin-top:20px" (click)="resetFilters()">Clear filters</button>
+    </div>
+  } @else {
+    <div class="games-grid">
+      @for (game of filtered(); track game.id) {
+        <article class="game-card card">
+          <a [routerLink]="['/games', game.id]" class="game-img-link">
+            @if (game.imglink) {
+              <img [src]="game.imglink" [alt]="game.gamesName"
+                class="game-img" loading="lazy" (error)="imgFallback($event)">
+            } @else {
+              <div class="game-img-ph">🎲</div>
+            }
+          </a>
+          <div class="game-body">
+            <a [routerLink]="['/games', game.id]" class="game-name">{{ game.gamesName }}</a>
+            <p class="game-desc">{{ truncate(game.description) }}</p>
+            <div class="game-footer">
+              <span class="game-price">{{ game.price }} $</span>
+              <button class="btn btn-primary btn-sm"
+                [disabled]="addingId() === game.id"
+                (click)="addToCart(game)">
+                @if (addingId() === game.id) {
+                  <span class="spinner spinner-xs"></span>
+                } @else { 🛒 }
+                Add
+              </button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

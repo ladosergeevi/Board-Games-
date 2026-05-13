@@ -1,0 +1,73 @@
+<header class="navbar">
+  <div class="container nav-wrap">
+
+    <!-- Logo -->
+    <a routerLink="/" class="logo">
+      <span class="logo-emoji">🎲</span>
+      <span class="logo-name">Board<strong>Games</strong></span>
+    </a>
+
+    <!-- Desktop nav links -->
+    <nav class="nav-links hide-sm">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Catalog</a>
+      @if (auth.isAdmin()) {
+        <a routerLink="/admin" routerLinkActive="active">Admin</a>
+      }
+    </nav>
+
+    <!-- Desktop actions -->
+    <div class="nav-actions hide-sm">
+      @if (auth.isLoggedIn()) {
+        <a routerLink="/cart" class="cart-btn" aria-label="Cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          @if (cart.itemCount() > 0) {
+            <span class="cart-count">{{ cart.itemCount() }}</span>
+          }
+        </a>
+        <button class="btn btn-outline btn-sm" (click)="auth.logout()">Sign out</button>
+      } @else {
+        <a routerLink="/auth/login"    class="btn btn-ghost   btn-sm">Sign in</a>
+        <a routerLink="/auth/register" class="btn btn-primary btn-sm">Sign up</a>
+      }
+    </div>
+
+    <!-- Mobile: cart icon + burger -->
+    <div class="nav-mobile-right">
+      @if (auth.isLoggedIn()) {
+        <a routerLink="/cart" class="cart-btn" aria-label="Cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          @if (cart.itemCount() > 0) {
+            <span class="cart-count">{{ cart.itemCount() }}</span>
+          }
+        </a>
+      }
+      <button class="burger" (click)="toggleMenu()" aria-label="Menu">
+        <span [class.open]="menuOpen()"></span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Mobile drawer -->
+  @if (menuOpen()) {
+    <nav class="mobile-menu">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="closeMenu()">Catalog</a>
+      @if (auth.isAdmin()) {
+        <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()">Admin</a>
+      }
+      <div class="mob-divider"></div>
+      @if (auth.isLoggedIn()) {
+        <button class="btn btn-outline btn-sm" (click)="auth.logout(); closeMenu()">Sign out</button>
+      } @else {
+        <a routerLink="/auth/login"    class="btn btn-ghost   btn-sm" (click)="closeMenu()">Sign in</a>
+        <a routerLink="/auth/register" class="btn btn-primary btn-sm" (click)="closeMenu()">Sign up</a>
+      }
+    </nav>
+  }
+</header>

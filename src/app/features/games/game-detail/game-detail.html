@@ -1,0 +1,141 @@
+<div class="container">
+
+  <a routerLink="/" class="back-link">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+    </svg>
+    Back to catalog
+  </a>
+
+  @if (loading()) {
+    <div class="spinner-wrap"><div class="spinner spinner-lg"></div></div>
+  } @else if (!game()) {
+    <div class="empty">
+      <div class="empty-icon">😕</div>
+      <h3 class="empty-title">Game not found</h3>
+      <a routerLink="/" class="btn btn-primary" style="margin-top:16px">Go to catalog</a>
+    </div>
+  } @else {
+
+    <div class="detail-grid">
+      <div class="img-col">
+        <div class="img-wrap card">
+          @if (game()!.imglink) {
+            <img [src]="game()!.imglink" [alt]="game()!.gamesName"
+              class="detail-img" (error)="imgFallback($event)">
+          } @else {
+            <div class="img-ph">🎲</div>
+          }
+        </div>
+      </div>
+
+      <div class="info-col">
+        <h1 class="detail-title">{{ game()!.gamesName }}</h1>
+        <div class="price-row">
+          <span class="detail-price">{{ game()!.price }} $</span>
+          <span class="badge badge-primary">In stock</span>
+        </div>
+        <p class="detail-desc">{{ game()!.description }}</p>
+        <div class="divider"></div>
+        <div class="actions-row">
+          <div class="qty">
+            <button class="qty__btn" (click)="decQty()" [disabled]="qty <= 1">−</button>
+            <span class="qty__val">{{ qty }}</span>
+            <button class="qty__btn" (click)="incQty()" [disabled]="qty >= 99">+</button>
+          </div>
+          <button class="btn btn-primary btn-lg add-btn" [disabled]="adding()" (click)="addToCart()">
+            @if (adding()) { <span class="spinner spinner-xs"></span> } @else { 🛒 }
+            Add to cart
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <section class="reviews">
+      <h2 class="reviews-heading">
+        Customer Reviews
+        @if (reviews().length) {
+          <span class="badge badge-primary">{{ reviews().length }}</span>
+        }
+      </h2>
+
+      @if (auth.isLoggedIn()) {
+        <div class="review-form card">
+          <h3>Write a review</h3>
+          <div class="stars-row">
+            @for (s of stars; track s) {
+              <button class="star-btn" [class.lit]="newRating >= s" (click)="setRating(s)">★</button>
+            }
+            @if (newRating > 0) {
+              <button class="star-clear" (click)="clearRating()">✕</button>
+            }
+          </div>
+          <textarea class="form-control review-ta" [(ngModel)]="newComment"
+            placeholder="Share your experience…" rows="3"></textarea>
+          <button class="btn btn-primary btn-sm"
+            [disabled]="!newComment.trim() || newRating === 0" (click)="submitReview()">
+            Publish review
+          </button>
+        </div>
+      } @else {
+        <div class="sign-prompt">
+          <a routerLink="/auth/login" class="btn btn-outline btn-sm">Sign in to write a review</a>
+        </div>
+      }
+
+      @if (reviewsLoading()) {
+        <div class="spinner-wrap" style="padding:24px"><div class="spinner spinner-lg"></div></div>
+      } @else if (reviews().length === 0) {
+        <p class="no-reviews">No reviews yet. Be the first!</p>
+      } @else {
+        <div class="reviews-list">
+          @for (r of reviews(); track r.id) {
+            <div class="review-card card">
+              <div class="review-meta" style="display:flex;align-items:center;gap:12px;">
+                <div class="avatar">{{ r.username.charAt(0).toUpperCase() }}</div>
+                <div style="flex:1">
+                  <strong class="review-author">{{ r.username }}</strong>
+                  <div class="review-stars">
+                    @for (s of stars; track s) {
+                      <span [class.lit]="s <= r.rating">★</span>
+                    }
+                  </div>
+                </div>
+                @if (r.userId === currentUserId) {
+                  <div style="display:flex;gap:8px;margin-left:auto;">
+                    <button (click)="startEdit(r)" 
+                      style="background:none;border:none;cursor:pointer;color:#6c63ff;font-size:13px;font-weight:600;">
+                      Edit
+                    </button>
+                    <button (click)="deleteReview(r.id)"
+                      style="background:none;border:none;cursor:pointer;color:#e53e3e;font-size:13px;font-weight:600;">
+                      Delete
+                    </button>
+                  </div>
+                }
+              </div>
+
+              @if (editingReviewId === r.id) {
+                <div style="margin-top:12px;">
+                  <div class="stars-row">
+                    @for (s of stars; track s) {
+                      <button class="star-btn" [class.lit]="editRating >= s" (click)="editRating = s">★</button>
+                    }
+                  </div>
+                  <textarea class="form-control review-ta" [(ngModel)]="editComment"
+                    rows="3" style="margin-top:8px;"></textarea>
+                  <div style="display:flex;gap:8px;margin-top:8px;">
+                    <button class="btn btn-primary btn-sm" (click)="saveEdit(r.id)">Save</button>
+                    <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">Cancel</button>
+                  </div>
+                </div>
+              } @else {
+                <p class="review-text">{{ r.text }}</p>
+              }
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+</div>

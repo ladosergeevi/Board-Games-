@@ -1,0 +1,59 @@
+.cart-head {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 28px;
+}
+
+.cart-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+  align-items: start;
+}
+
+.cart-items { display: flex; flex-direction: column; gap: 12px; }
+
+.cart-item {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  gap: 16px; padding: 16px 20px;
+  flex-wrap: wrap;
+}
+
+.item-info   { flex: 1; min-width: 120px; }
+.item-name   { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.item-unit   { font-size: 13px; color: var(--clr-muted); }
+
+.item-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.item-total    { font-size: 18px; font-weight: 900; color: var(--clr-primary); min-width: 72px; text-align: right; }
+
+.remove-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm); color: var(--clr-muted);
+  background: var(--clr-surface2); transition: all var(--ease); cursor: pointer; border: none;
+  &:hover { background: var(--clr-danger-light); color: var(--clr-danger); }
+}
+
+.clear-all { color: var(--clr-danger); align-self: flex-start; margin-top: 4px; &:hover { background: var(--clr-danger-light); } }
+
+/* Summary */
+.summary        { padding: 24px; position: sticky; top: 80px; }
+.summary-title  { font-size: 18px; font-weight: 800; margin-bottom: 18px; }
+
+.summary-lines  { display: flex; flex-direction: column; gap: 8px; }
+.summary-line   { display: flex; justify-content: space-between; font-size: 13px; color: var(--clr-muted); }
+.line-name      { flex: 1; margin-right: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.summary-total  { display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 700; }
+.total-price    { font-size: 26px; font-weight: 900; color: var(--clr-primary); }
+.checkout-btn   { padding: 14px; font-size: 15px; margin-top: 4px; }
+
+@media (max-width: 900px) {
+  .cart-layout { grid-template-columns: 1fr; }
+  .summary     { position: static; }
+}
+@media (max-width: 560px) {
+  .cart-item     { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .item-controls { width: 100%; justify-content: space-between; }
+  .item-total    { min-width: auto; }
+}

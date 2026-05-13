@@ -1,0 +1,83 @@
+<div class="container">
+
+  <div class="cart-head">
+    <h1 class="page-title">Shopping Cart</h1>
+    @if (cart.cart()?.items?.length) {
+      <span class="badge badge-primary">{{ plural(cart.cart()!.items.length) }}</span>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="spinner-wrap"><div class="spinner spinner-lg"></div></div>
+  } @else if (!cart.cart() || cart.cart()!.items.length === 0) {
+    <div class="empty">
+      <div class="empty-icon">🛒</div>
+      <h3 class="empty-title">Your cart is empty</h3>
+      <p class="empty-desc">Add some games from the catalog</p>
+      <a routerLink="/" class="btn btn-primary" style="margin-top:20px">Browse games</a>
+    </div>
+  } @else {
+    <div class="cart-layout">
+
+      <!-- Items -->
+      <div class="cart-items">
+        @for (item of cart.cart()!.items; track item.cartItemId) {
+          <div class="cart-item card">
+            <img [src]="item.imglink" [alt]="item.gamesName"
+              style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+            <div class="item-info">
+              <p class="item-name">{{ item.gamesName }}</p>
+              <p class="item-unit">{{ item.price }} $ each</p>
+            </div>
+            <div class="item-controls">
+              <div class="qty">
+                <button class="qty__btn"
+                  (click)="changeQty(item.cartItemId, item.quantity - 1)"
+                  [disabled]="item.quantity <= 1">−</button>
+                <span class="qty__val">{{ item.quantity }}</span>
+                <button class="qty__btn"
+                  (click)="changeQty(item.cartItemId, item.quantity + 1)"
+                  [disabled]="item.quantity >= 99">+</button>
+              </div>
+              <span class="item-total">{{ item.totalPrice }} $</span>
+              <button class="remove-btn" (click)="removeItem(item.cartItemId)" title="Remove">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        }
+
+        <button class="btn btn-ghost btn-sm clear-all" (click)="clearCart()">
+          Clear entire cart
+        </button>
+      </div>
+
+      <!-- Summary -->
+      <aside class="summary card">
+        <h2 class="summary-title">Order summary</h2>
+
+        <div class="summary-lines">
+          @for (item of cart.cart()!.items; track item.cartItemId) {
+            <div class="summary-line">
+              <span class="line-name">{{ item.gamesName }} × {{ item.quantity }}</span>
+              <span>{{ item.totalPrice }} $</span>
+            </div>
+          }
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="summary-total">
+          <span>Total</span>
+          <span class="total-price">{{ cart.cart()!.grandTotal }} $</span>
+        </div>
+
+        <button class="btn btn-primary btn-full checkout-btn" (click)="checkout()">Proceed to checkout</button>
+        <a routerLink="/" class="btn btn-ghost btn-full" style="margin-top:4px">Continue shopping</a>
+      </aside>
+    </div>
+  }
+</div>

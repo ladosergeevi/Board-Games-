@@ -1,0 +1,107 @@
+<div class="container">
+
+  <div class="admin-head">
+    <div>
+      <h1 class="page-title">Admin Panel</h1>
+      <p class="page-sub">Manage game catalog</p>
+    </div>
+    <div class="stat-card card">
+      <span class="stat-num">{{ games().length }}</span>
+      <span class="stat-label">Total games</span>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+
+    <!-- Form -->
+    <div class="admin-form card">
+      <h2 class="form-title">{{ editingId() ? '✏️ Edit game' : '➕ Add new game' }}</h2>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-group">
+          <label class="form-label" for="gamesName">Game name</label>
+          <input id="gamesName" class="form-control" type="text"
+            formControlName="gamesName" placeholder="e.g. Catan">
+          @if (form.get('gamesName')?.invalid && form.get('gamesName')?.touched) {
+            <span class="form-error">Required, max 20 characters</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="desc">Description</label>
+          <textarea id="desc" class="form-control desc-ta"
+            formControlName="description" rows="4" placeholder="Describe the game…"></textarea>
+          @if (form.get('description')?.invalid && form.get('description')?.touched) {
+            <span class="form-error">Description is required</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="price">Price ($)</label>
+          <input id="price" class="form-control" type="number"
+            formControlName="price" placeholder="29" min="1" max="1000">
+          @if (form.get('price')?.invalid && form.get('price')?.touched) {
+            <span class="form-error">Price must be between 1 and 1000</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="imglink">Image URL</label>
+          <input id="imglink" class="form-control" type="url"
+            formControlName="imglink" placeholder="https://example.com/image.jpg">
+          @if (previewUrl) {
+            <div class="img-preview">
+              <img [src]="previewUrl" alt="Preview" (error)="previewError($event)">
+            </div>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit" [disabled]="submitting()">
+            @if (submitting()) { <span class="spinner spinner-xs"></span> }
+            {{ editingId() ? 'Save changes' : 'Add game' }}
+          </button>
+          @if (editingId()) {
+            <button class="btn btn-ghost" type="button" (click)="cancelEdit()">Cancel</button>
+          }
+        </div>
+      </form>
+    </div>
+
+    <!-- Games list -->
+    <div class="admin-catalog">
+      <h2 class="catalog-title">All games</h2>
+
+      @if (loading()) {
+        <div class="spinner-wrap"><div class="spinner spinner-lg"></div></div>
+      } @else if (games().length === 0) {
+        <div class="empty" style="padding:40px">
+          <div class="empty-icon">📦</div>
+          <p class="empty-title">No games yet</p>
+        </div>
+      } @else {
+        <div class="admin-list">
+          @for (game of games(); track game.id) {
+            <div class="admin-row card" [class.is-editing]="editingId() === game.id">
+              <div class="row-thumb">
+                @if (game.imglink) {
+                  <img [src]="game.imglink" [alt]="game.gamesName" (error)="imgFallback($event)">
+                } @else {
+                  <span>🎲</span>
+                }
+              </div>
+              <div class="row-info">
+                <p class="row-name">{{ game.gamesName }}</p>
+                <p class="row-price">{{ game.price }} $</p>
+              </div>
+              <div class="row-actions">
+                <button class="btn btn-outline btn-sm" (click)="startEdit(game)">Edit</button>
+                <button class="btn btn-danger  btn-sm" (click)="deleteGame(game)">Delete</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
